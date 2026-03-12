@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "versionCode": 1,
-  "apkUrl": "https://files.elitescholar.ng/uploads/EliteScholar.apk",
-  "releaseNotes": "Initial release with Elite Scholar logo",
+  "apkUrl": "https://github.com/eliteedtech1-debug/elitescholar.app/releases/latest/download/EliteScholar-stable.apk",
+  "releaseNotes": "Initial release with Elite Scholar logo and biometric authentication",
   "forceUpdate": false
 }
