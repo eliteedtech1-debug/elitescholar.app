@@ -1,0 +1,72 @@
+name: Build Android APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          repository: eliteedtech1-debug/elitescholar-ui
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build web app
+        run: npm run build
+      
+      - name: Sync Capacitor
+        run: npx cap sync android
+      
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+      
+      - name: Sign APK
+        run: |
+          cd android
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > elite-release.keystore
+          $ANDROID_HOME/build-tools/34.0.0/zipalign -f -p 4 \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            app/build/outputs/apk/release/app-release-aligned.apk
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
+            --ks elite-release.keystore \
+            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
+            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+            --out app/build/outputs/apk/release/EliteScholar.apk \
+            app/build/outputs/apk/release/app-release-aligned.apk
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: android/app/build/outputs/apk/release/EliteScholar.apk
+          tag_name: ${{ github.ref_name }}
+          name: Elite Scholar ${{ github.ref_name }}
+          body: |
+            Automated release build
+            
+            Download and install EliteScholar.apk on your Android device.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
