@@ -1,7 +1,7 @@
 {
-  "version": "1.0.1.9",
-  "versionCode": 100109,
+  "version": "1.0.1.10",
+  "versionCode": 100110,
   "apkUrl": "https://github.com/eliteedtech1-debug/elitescholar.app/releases/latest/download/EliteScholar.apk",
-  "releaseNotes": "Release v1.0.1.9",
+  "releaseNotes": "Release v1.0.1.10",
   "forceUpdate": false
 }
